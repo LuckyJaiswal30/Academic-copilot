@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Copilot</title>
+    <script type="module" src="https://unpkg.com/@fluentui/web-components"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Academic Copilot</h1>
+            <p class="subtitle">Rule-based Academic Decision Support System</p>
+        </header>
+
+        <section id="profile-section" class="module">
+            <fluent-card>
+                <h2>Academic Profile Setup</h2>
+                <p class="module-description">Define your subjects with constraints and context.</p>
+                <form id="subject-form" class="subject-form">
+                    <div class="form-group">
+                        <label for="subject-name">Subject Name</label>
+                        <fluent-text-field id="subject-name" placeholder="e.g., Data Structures" required></fluent-text-field>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="credit-weight">Credit Weight</label>
+                            <fluent-text-field id="credit-weight" type="number" min="1" max="10" placeholder="1-10" required></fluent-text-field>
+                        </div>
+                        <div class="form-group">
+                            <label for="difficulty">Difficulty (1-5)</label>
+                            <fluent-text-field id="difficulty" type="number" min="1" max="5" placeholder="1-5" required></fluent-text-field>
+                        </div>
+                        <div class="form-group">
+                            <label for="interest">Interest Level (1-5)</label>
+                            <fluent-text-field id="interest" type="number" min="1" max="5" placeholder="1-5" required></fluent-text-field>
+                        </div>
+                        <div class="form-group">
+                            <label for="study-hours">Available Study Hours/Week</label>
+                            <fluent-text-field id="study-hours" type="number" min="0" step="0.5" placeholder="Hours" required></fluent-text-field>
+                        </div>
+                    </div>
+                    <fluent-button id="add-subject-btn" appearance="accent" type="submit">Add Subject</fluent-button>
+                </form>
+                <div id="subjects-list" class="subjects-list"></div>
+                <div class="actions">
+                    <fluent-button id="calculate-priority-btn" appearance="accent" disabled>Calculate Priorities</fluent-button>
+                    <fluent-button id="reset-profile-btn" appearance="neutral">Reset Profile</fluent-button>
+                </div>
+            </fluent-card>
+        </section>
+
+        <section id="priority-section" class="module" style="display: none;">
+            <fluent-card>
+                <h2>Decision Support Engine</h2>
+                <p class="module-description">Policy-driven priority scores with transparent rule-based logic.</p>
+                <div class="policy-selector" style="margin-bottom: 24px;">
+                    <label for="policy-select">Decision Policy:</label>
+                    <fluent-select id="policy-select">
+                        <fluent-option value="balanced">Balanced Policy</fluent-option>
+                        <fluent-option value="exam_focused">Exam-Focused Policy</fluent-option>
+                        <fluent-option value="risk_averse">Risk-Averse Policy</fluent-option>
+                        <fluent-option value="execution_aware">Execution-Aware Policy</fluent-option>
+                    </fluent-select>
+                    <fluent-button id="recalculate-priority-btn" appearance="neutral" style="margin-left: 12px;">Recalculate</fluent-button>
+                </div>
+                <div id="policy-info" class="policy-info" style="margin-bottom: 16px;"></div>
+                <div id="priority-results" class="priority-results"></div>
+                <div id="risk-section" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #edebe9;">
+                    <h3 style="font-size: 18px; margin-bottom: 16px;">Risk Assessment</h3>
+                    <p class="module-description" style="margin-bottom: 16px;">Independent risk scoring separate from priority.</p>
+                    <div id="risk-results" class="risk-results"></div>
+                </div>
+                <div id="explainability-panel" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #edebe9;">
+                    <h3 style="font-size: 18px; margin-bottom: 16px;">Decision Explanation</h3>
+                    <div id="explanation-content" class="explanation-content"></div>
+                </div>
+            </fluent-card>
+        </section>
+
+        <section id="recommendation-section" class="module" style="display: none;">
+            <fluent-card>
+                <h2>Study Effort Recommendation</h2>
+                <p class="module-description">Recommended weekly study hours with confidence levels and constraint evaluation.</p>
+                <div id="recommendations" class="recommendations"></div>
+                <div id="constraints-section" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #edebe9;">
+                    <h3 style="font-size: 18px; margin-bottom: 16px;">Constraint Evaluation</h3>
+                    <div id="constraints-results" class="constraints-results"></div>
+                </div>
+                <div id="overload-warning" class="warning" style="display: none; margin-top: 16px;"></div>
+            </fluent-card>
+        </section>
+
+        <section id="tracking-section" class="module" style="display: none;">
+            <fluent-card>
+                <h2>Execution Tracking</h2>
+                <p class="module-description">Log your actual study hours and completion status.</p>
+                <div class="week-selector">
+                    <label for="week-select">Select Week:</label>
+                    <fluent-select id="week-select">
+                        <fluent-option value="current">Current Week</fluent-option>
+                    </fluent-select>
+                    <fluent-button id="new-week-btn" appearance="neutral">New Week</fluent-button>
+                </div>
+                <div id="tracking-form" class="tracking-form"></div>
+                <div id="tracking-actions" class="actions" style="display: none;">
+                    <fluent-button id="save-tracking-btn" appearance="accent">Save Tracking Data</fluent-button>
+                </div>
+            </fluent-card>
+        </section>
+
+        <section id="insights-section" class="module" style="display: none;">
+            <fluent-card>
+                <h2>Reflection & Insights</h2>
+                <p class="module-description">Feedback loop with raw comparison, pattern detection, and behavioral signals.</p>
+                <div id="insights-tabs" class="insights-tabs" style="margin-bottom: 16px;">
+                    <fluent-button id="insights-raw-btn" class="tab-button active" appearance="neutral">Raw Comparison</fluent-button>
+                    <fluent-button id="insights-pattern-btn" class="tab-button" appearance="neutral">Pattern Detection</fluent-button>
+                    <fluent-button id="insights-behavioral-btn" class="tab-button" appearance="neutral">Behavioral Signals</fluent-button>
+                </div>
+                <div id="insights-content" class="insights-content"></div>
+                <div id="trends-section" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #edebe9;">
+                    <h3 style="font-size: 18px; margin-bottom: 16px;">Temporal & Trend Analysis</h3>
+                    <div id="trends-content" class="trends-content"></div>
+                </div>
+            </fluent-card>
+        </section>
+
+        <section id="scenario-section" class="module" style="display: none;">
+            <fluent-card>
+                <h2>Scenario Simulation</h2>
+                <p class="module-description">Explore "what-if" scenarios without committing to changes.</p>
+                <div class="scenario-controls" style="margin-bottom: 24px;">
+                    <div class="form-group">
+                        <label for="scenario-type">Scenario Type:</label>
+                        <fluent-select id="scenario-type">
+                            <fluent-option value="drop_subject">Drop Subject</fluent-option>
+                            <fluent-option value="modify_hours">Modify Available Hours</fluent-option>
+                            <fluent-option value="change_policy">Change Policy</fluent-option>
+                        </fluent-select>
+                    </div>
+                    <div id="scenario-params" class="scenario-params"></div>
+                    <fluent-button id="run-scenario-btn" appearance="accent" style="margin-top: 16px;">Run Scenario</fluent-button>
+                    <fluent-button id="reset-scenario-btn" appearance="neutral" style="margin-top: 16px; margin-left: 8px;">Reset to Baseline</fluent-button>
+                </div>
+                <div id="scenario-results" class="scenario-results"></div>
+            </fluent-card>
+        </section>
+    </div>
+
+    <script src="core/policies.js"></script>
+    <script src="core/riskEngine.js"></script>
+    <script src="core/constraints.js"></script>
+    <script src="core/confidenceEngine.js"></script>
+    <script src="core/trendAnalysis.js"></script>
+    <script src="core/insightsEngine.js"></script>
+    <script src="core/scenarioEngine.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
